@@ -12,6 +12,7 @@ Your job:
 
 - Implement ranking logic over a small in-memory corpus `DOCUMENTS`
 - Create and utilize FAISS vector database in `search/scoring.py`
+- Implement a `rerank_result` function which is used to further refine search results
 - Return the top `k` results as `SearchResult` objects.
 - Keep the code clean, readable and maintainable.
 

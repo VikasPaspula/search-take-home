@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
 
 from .models import SearchResult
@@ -18,7 +19,7 @@ def rerank_result(query: str, document: Document) -> float:
 
 
 @lru_cache()
-def load_FAISS(documents: list[Document]):
+def load_FAISS(documents: list[Document]) -> FAISS:
     """Create and return a FAISS vector store from the DOCUMENTS list."""
     # TODO
     return
