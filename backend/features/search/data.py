@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from .models import Document
+from langchain_core.documents import Document
 
 DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
 
