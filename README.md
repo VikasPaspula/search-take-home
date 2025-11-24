@@ -11,8 +11,10 @@ In `backend/features/search/search_router.py`, you'll find a POST endpoint stub 
 Your job:
 
 - Implement ranking logic over a small in-memory corpus `DOCUMENTS`
-- Create and utilize FAISS vector database in `search/scoring.py`
-- Implement a `rerank_result` function which is used to further refine search results
+- Create and utilize FAISS vector database in `search/integrations.py`
+- Implement a `CypherQuery` pydantic BaseModel class in `search/models.py`, with it's own `__str__` function that returns itself as a Cypher Query
+- Implement a prototype `text_to_cypher` function, which utilizes langchain LLMs, the `CypherQuery` and `with_structured_output` to create a query from natural language
+- Search the FAISS index using the natural language query AND the CypherQuery (for testing purposes - in a typical use case, the Cypher would be executed on a neo4j DB or similar)
 - Return the top `k` results as `SearchResult` objects.
 - Keep the code clean, readable and maintainable.
 
@@ -48,7 +50,7 @@ backend/
     data.py                            # Loads DOCUMENTS into memory
     models.py                          # Pydantic models (Document, SearchRequest, SearchResult)
     search_router.py                   # Your backend task lives
-    scoring.py                         # Your backend scoring task here
+    integrations.py                    # Your backend scoring task here
 frontend/
   src/lib/api.ts                       # TypeScript client for /api/search (your task)
   src/lib/searchHistory.ts             # Pure TypeScript helpers for search history (your task)
@@ -58,7 +60,7 @@ frontend/
 You should only need to modify:
 
 - `backend/features/search/search_router.py`
-- `backend/features/search/scoring.py`
+- `backend/features/search/integrations.py`
 - `frontend/src/lib/api.ts`
 - `frontend/src/lib/searchHistory.ts`
 - (Optional) `frontend/src/features/search/SearchPage.tsx`

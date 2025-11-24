@@ -18,3 +18,13 @@ class SearchRequest(BaseModel):
 class SearchEntry(BaseModel):
     query: str = Field(..., min_length=1)
     timestamp: datetime
+
+
+class CypherQuery(BaseModel):
+    """Fields that can be converted to a Cypher Query in natural language."""
+
+    # TODO
+
+    def __str__(self) -> str:
+        """TODO"""
+        return ""

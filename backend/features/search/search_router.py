@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 from .data import DOCUMENTS  # noqa: F401
 from .models import SearchEntry, SearchRequest, SearchResult
-from .scoring import search_documents
+from .integrations import search_documents
 
 router = APIRouter(prefix="/search", tags=["search"])
 SEARCH_HISTORY: list[SearchEntry] = []
