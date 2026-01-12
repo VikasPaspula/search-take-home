@@ -1,37 +1,32 @@
 import { type FormEvent, useState } from "react";
-import { SearchError, type SearchResult, search } from "../../lib/api";
+import { search, type SearchResult } from "../../lib/api";
 import {
   addToHistory,
   getRecentQueries,
-  type SearchHistory,
+  type SearchQuery,
 } from "../../lib/searchHistory";
 
 export const SearchPage = () => {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchResult[]>();
+  const [results, setResults] = useState<SearchResult[] | undefined>();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>();
-  const [history, setHistory] = useState<SearchHistory>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [history, setHistory] = useState<SearchQuery[]>([]);
 
   async function handleSearch(rawQuery: string) {
     const trimmed = rawQuery.trim();
-    if (!trimmed) {
-      return;
-    }
-    // Keep input in sync when triggered from RecentSearches
-    setQuery(trimmed);
+    if (!trimmed) return;
 
+    setQuery(trimmed);
     setLoading(true);
     setError(null);
 
     try {
       const nextResults = await search(trimmed);
       setResults(nextResults);
-      setHistory((prev) => addToHistory(prev, trimmed, { maxEntries: 5 }));
+      setHistory((prev) => addToHistory(prev, trimmed, 5));
     } catch (err) {
-      if (err instanceof SearchError) {
-        setError(err.message);
-      } else if (err instanceof Error) {
+      if (err instanceof Error) {
         setError(err.message);
       } else {
         setError("Unexpected error while searching.");
@@ -65,19 +60,20 @@ export const SearchPage = () => {
       </form>
 
       {error && (
-        <div style={{ color: "red", marginBottom: "0.5rem" }}>{error}</div>
+        <div style={{ color: "red", marginBottom: "0.5rem" }}>
+          {error}
+        </div>
       )}
 
       {history.length > 0 && (
         <div style={{ marginBottom: "0.75rem", fontSize: "0.9rem" }}>
-          <div style={{ marginBottom: "0.25rem" }}>Recent searches:</div>
+          <div style={{ marginBottom: "0.25rem" }}>
+            Recent searches:
+          </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
             {getRecentQueries(history).map((q, index) => (
               <button
-                key={`${q}-${
-                  //
-                  index
-                }`}
+                key={`${q}-${index}`}
                 type="button"
                 onClick={() => void handleSearch(q)}
                 disabled={loading}
@@ -104,16 +100,16 @@ export const SearchPage = () => {
         <ul>
           {results.map((r) => (
             <li
-              key={r.document.metadata.id}
-              style={{ marginBottom: "0.5rem" }}
+              key={r.document.id}
+              style={{ marginBottom: "0.75rem" }}
             >
-              <strong>{r.document.metadata.title}</strong> (score:{" "}
-              {r.score.toFixed(3)})
-              {r.reason && (
-                <div style={{ fontSize: "0.85rem", color: "#555" }}>
-                  {r.reason}
-                </div>
-              )}
+              <strong>{r.document.title}</strong>{" "}
+              <span style={{ color: "#666" }}>
+                (score: {r.score.toFixed(3)})
+              </span>
+              <div style={{ fontSize: "0.85rem", color: "#444" }}>
+                {r.document.text}
+              </div>
             </li>
           ))}
         </ul>

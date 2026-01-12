@@ -1,11 +1,19 @@
 import json
 from pathlib import Path
+from .models import Document
 
-from langchain_core.documents import Document
+DATA_PATH = Path(__file__).resolve().parents[2] / "data" / "documents.json"
 
-DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
+with open(DATA_PATH, "r", encoding="utf-8") as f:
+    raw_docs = json.load(f)
 
-with (DATA_DIR / "documents.json").open("r", encoding="utf-8") as f:
-    RAW_DOCS = json.load(f)
+DOCUMENTS = []
 
-DOCUMENTS: list[Document] = [Document(**d) for d in RAW_DOCS]
+for idx, doc in enumerate(raw_docs):
+    DOCUMENTS.append(
+        Document(
+            id=idx,
+            title=doc.get("metadata", {}).get("title", "Untitled"),
+            text=doc.get("page_content", "")
+        )
+    )

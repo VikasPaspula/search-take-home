@@ -1,30 +1,29 @@
-from datetime import datetime
+from pydantic import BaseModel
+from typing import Optional
 
-from langchain_core.documents import Document
-from pydantic import BaseModel, Field
+
+class Document(BaseModel):
+    id: int
+    title: str
+    text: str
+
+
+class SearchRequest(BaseModel):
+    query: str
+    top_k: int = 5
 
 
 class SearchResult(BaseModel):
     document: Document
-    score: float = Field(..., ge=0)
-    reason: str | None = None
-
-
-class SearchRequest(BaseModel):
-    query: str = Field(..., min_length=1)
-    top_k: int = Field(5, ge=1, le=50)
-
-
-class SearchEntry(BaseModel):
-    query: str = Field(..., min_length=1)
-    timestamp: datetime
+    score: float
 
 
 class CypherQuery(BaseModel):
-    """Fields that can be converted to a Cypher Query in natural language."""
-
-    # TODO
+    match: str
+    where: Optional[str] = None
+    return_: str = "d"
 
     def __str__(self) -> str:
-        """TODO"""
-        return ""
+        if self.where:
+            return f"MATCH {self.match} WHERE {self.where} RETURN {self.return_}"
+        return f"MATCH {self.match} RETURN {self.return_}"
